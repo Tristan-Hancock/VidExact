@@ -1,14 +1,11 @@
 .env
-datasets/action_recognition/UCF-101/*
-datasets/action_recognition/depend/*
-datasets/action_recognition/input/*
-datasets/action_recognition/model_training/*
-datasets/action_recognition/output/*
-datasets/action_recognition/scripts/*
+datasets/action_recognition/*
+model_training/*
+input/*
+output/*
+models/*
 
 !datasets/action_recognition/UCF-101/.gitkeep
-!datasets/action_recognition/depend/.gitkeep
-!datasets/action_recognition/input/.gitkeep
-!datasets/action_recognition/model_training/.gitkeep
-!datasets/action_recognition/output/.gitkeep
-!datasets/action_recognition/scripts/.gitkeep
+!input/.gitkeep
+!model_training/.gitkeep
+!output/.gitkeep
