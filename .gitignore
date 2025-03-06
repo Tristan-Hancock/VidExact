@@ -1,0 +1,12 @@
+.env
+# Ignore all files in input and output folders
+input/*
+output/*
+UCF-101/*
+processed/*
+processed_data/*
+# Allow the folders themselves
+!input/
+!output/
+!processed
+!UCF-101/

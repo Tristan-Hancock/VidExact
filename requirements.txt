@@ -1,0 +1,15 @@
+ffmpeg-python==0.2.0
+joblib==1.4.2
+numpy==1.26.4
+opencv-python==4.11.0.86
+scenedetect==0.6.5.2
+vosk==0.3.44
+torch==2.5.1
+torchvision==0.20.1
+mediapipe==0.10.20
+tensorflow==2.16.2
+keras==3.8.0
+jax==0.4.13
+jaxlib==0.4.13
+
+#change for windows versions-
