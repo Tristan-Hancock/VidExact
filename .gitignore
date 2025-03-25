@@ -1,11 +1,13 @@
 .env
-datasets/action_recognition/*
+datasets/*
 model_training/*
 input/*
 output/*
 models/*
-
-!datasets/action_recognition/UCF-101/.gitkeep
+training/*
 !input/.gitkeep
 !model_training/.gitkeep
 !output/.gitkeep
+scripts/clips/*
+scripts/frames/*
+scripts/yolov5x.pt
