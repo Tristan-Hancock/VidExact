@@ -43,9 +43,26 @@ def normalize_caption(text):
 
 df['caption_norm'] = df['caption'].apply(normalize_caption)
 
-# --- Select and reorder columns for search index ---
-search_df = df[['clip_name', 'timestamp_start', 'timestamp_end', 'face_names', 'objects', 'action_terms', 'caption_norm']]
+# --- Create Combined Text ---
+df['combined_text'] = df[['face_names', 'objects', 'action_terms', 'caption_norm']].fillna('').agg(' '.join, axis=1)
 
-# Save cleaned CSV for indexing
+# Build a concise scene summary
+def build_summary(row):
+    parts = []
+    if row['face_names']:
+        parts.append(f"Person: {row['face_names']}")
+    if row['objects']:
+        parts.append(f"Objects: {row['objects'].replace(';',' ')}")
+    if row['action_terms']:
+        parts.append(f"Action: {row['action_terms']}")
+    if row['caption_norm']:
+        parts.append(f"Speech: {row['caption_norm']}")
+    return " | ".join(parts)
+
+df['scene_summary'] = df.apply(build_summary, axis=1)
+
+# Export both combined_text for indexing AND summary for display
+search_df = df[['clip_name','timestamp_start','timestamp_end','combined_text','scene_summary']]
 search_df.to_csv('../scripts/search_index.csv', index=False)
+
 print(f"Cleaned search index saved to '../scripts/search_index.csv' ({len(search_df)} rows)")

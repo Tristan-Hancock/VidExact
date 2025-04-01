@@ -400,5 +400,5 @@ def process_video(video_path):
 
 if __name__ == "__main__":
     print("[DEBUG] Starting main pipeline process...")
-    input_video = "../input/video.mp4"
+    input_video = "../input/Video4.mp4"
     process_video(input_video)

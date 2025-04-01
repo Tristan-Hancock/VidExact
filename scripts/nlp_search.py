@@ -41,7 +41,8 @@ def search(query, top_k=5):
             'clip_name': row['clip_name'],
             'start': row['timestamp_start'],
             'end': row['timestamp_end'],
-            'score': score
+            'score': score,
+            'summary': row['scene_summary']
         })
     return results
 
@@ -55,3 +56,4 @@ if __name__ == '__main__':
     print(f"Top {args.top_k} results for query: '{args.query}'\n")
     for r in results:
         print(f"{r['clip_name']} [{r['start']:.2f}s - {r['end']:.2f}s] (score: {r['score']:.3f})")
+        print("  ►", r['summary'])
