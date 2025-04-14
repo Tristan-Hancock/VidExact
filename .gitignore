@@ -1,13 +1,29 @@
+#backend
 .env
 datasets/*
 model_training/*
-input/*
+backend/input/*
 output/*
 models/*
 training/*
 !input/.gitkeep
 !model_training/.gitkeep
 !output/.gitkeep
-scripts/clips/*
-scripts/frames/*
-scripts/yolov5x.pt
+!training/.gitkeep
+
+# Backend scripts and model-related files
+backend/scripts/clips/*
+backend/scripts/frames/*
+backend/scripts/clips/.gitkeep
+backend/scripts/frames/.gitkeep
+backend/scripts/yolov5x.pt
+backend/models/*
+backend/output/csv/*
+
+# Frontend directories and files to ignore
+frontend/node_modules/
+frontend/dist/
+frontend/.vit/
+frontend/stats.html
+frontend/public/
+frontend/.eslintcache/
