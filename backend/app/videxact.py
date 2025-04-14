@@ -351,10 +351,14 @@ def process_video(video_path):
         print(f"[LOG] process_video: Processing scene #{idx} | Start: {start_sec:.2f}s, End: {end_sec:.2f}s.")
         
         # 2) Trim the scene using ffmpeg
-        clip_path = trim_clip(video_path, start_sec, end_sec, idx, max_duration=4.0, output_dir='clips')
+        clip_output_dir = os.path.join("..", "output", "clips")
+        clip_path = trim_clip(video_path, start_sec, end_sec, idx, max_duration=4.0, output_dir=clip_output_dir)
+
+
         
         # 3) Extract a key frame from the trimmed clip using OpenCV
-        frame_path = extract_key_frame(clip_path, frame_index='middle', output_dir='frames')
+        frame_output_dir = os.path.join("..", "output", "frames")
+        frame_path = extract_key_frame(clip_path, frame_index='middle', output_dir=frame_output_dir)
         ocr_text = recognize_text(frame_path) if frame_path else ""
         
         # 4) Speech-to-Text from the trimmed clip
