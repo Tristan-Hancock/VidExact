@@ -3,6 +3,7 @@
 datasets/*
 model_training/*
 backend/input/*
+!backend/input/.gitkeep
 output/*
 models/*
 training/*
