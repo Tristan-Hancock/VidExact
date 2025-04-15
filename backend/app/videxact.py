@@ -31,7 +31,7 @@ from scenedetect.detectors import ContentDetector, ThresholdDetector
 import vosk
 
 # Global: Load face recognition models (loaded once for efficiency)
-vgg_face_descriptor = load_model('../models/vgg_face_descriptor.h5')
+vgg_face_descriptor = load_model('../models/vgg_face_descriptor.h5', custom_objects={'InputLayer': CustomInputLayer})
 scaler = joblib.load('../models/scaler.pkl')
 pca = joblib.load('../models/pca.pkl')
 clf = joblib.load('../models/svm_classifier.pkl')
@@ -100,7 +100,7 @@ action_model = Improved3DCNN(num_classes=101).to(device)
 action_model.load_state_dict(torch.load('../models/action_recognition_model_9000_50.pth', map_location=device))
 action_model.eval()
 
-with open('../../training/action/preprocess/class_to_idx.json','r') as f:
+with open('../models/class_to_idx.json','r') as f:
     class_to_idx = json.load(f)
 idx_to_class = {v:k for k,v in class_to_idx.items()}
 
