@@ -7,7 +7,7 @@ import { Toaster } from "@/components/ui/toaster"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Video Content Search",
+  title: "VidExact",
   description: "Search for content within videos using natural language processing",
     generator: 'v0.dev'
 }

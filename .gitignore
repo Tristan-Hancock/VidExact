@@ -24,6 +24,7 @@ backend/output/clips/*
 !backend/output/clips/.gitkeep
 backend/output/frames/*
 !backend/output/frames/.gitkeep
+backend/venv
 
 
 # Frontend directories and files to ignore

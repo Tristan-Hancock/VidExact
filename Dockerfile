@@ -72,6 +72,12 @@
     EXPOSE 8000
     
     # -------------------------------
+    # Set environment variable to allow GPU memory to grow dynamically.
+    # This helps avoid DNN library initialization errors.
+    # -------------------------------
+    ENV TF_FORCE_GPU_ALLOW_GROWTH=true
+    
+    # -------------------------------
     # Set the working directory to where videxact.py is located.
     # This ensures that relative paths in your code work correctly.
     # -------------------------------
