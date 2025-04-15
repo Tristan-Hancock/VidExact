@@ -25,6 +25,7 @@ backend/output/clips/*
 backend/output/frames/*
 !backend/output/frames/.gitkeep
 backend/venv
+backend/server/yolov5x.pt
 
 
 # Frontend directories and files to ignore

@@ -405,7 +405,29 @@ def process_video(video_path):
     print(f"[LOG] process_video: All scenes processed. Results saved to '{csv_filename}'.")
 
 
+# if __name__ == "__main__":
+#     print("[DEBUG] Starting main pipeline process...")
+#     input_video = "../input/Video4.mp4"
+#     process_video(input_video)
 if __name__ == "__main__":
-    print("[DEBUG] Starting main pipeline process...")
-    input_video = "../input/Video4.mp4"
+    print("[DEBUG] Starting main pipeline process in videxact.py...")
+
+    # Compute the absolute path to the directory containing this script.
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    print(f"[DEBUG] videxact.py is located in: {script_dir}")
+
+    # Construct the absolute path to the input video.
+    input_video = os.path.join(script_dir, "..", "input", "Video4.mp4")
+    print(f"[DEBUG] Computed input video path: {input_video}")
+
+    # Check if the file exists.
+    if not os.path.exists(input_video):
+        print(f"[ERROR] Input video not found at: {input_video}")
+    else:
+        print(f"[DEBUG] Input video found. Proceeding with processing.")
+
+    # Call the processing function (make sure process_video() is defined properly).
     process_video(input_video)
+
+    print("[DEBUG] Finished processing video in videxact.py.")
+

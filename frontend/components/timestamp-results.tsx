@@ -1,21 +1,22 @@
-"use client"
+"use client";
 
-import { useVideoStore } from "@/lib/video-store"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Clock, ArrowRight } from "lucide-react"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Badge } from "@/components/ui/badge"
+import { useVideoStore } from "@/lib/video-store";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Clock, ArrowRight } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
 
 export function TimestampResults() {
-  const { searchResults, setCurrentTimestamp, isVideoLoaded, isAnalyzing } = useVideoStore()
+  const { searchResults, setCurrentTimestamp, isVideoLoaded, isAnalyzing } = useVideoStore();
 
   const handleJumpToTimestamp = (timestamp: number) => {
-    setCurrentTimestamp(timestamp)
-  }
+    console.log("Jumping to timestamp:", timestamp);
+    setCurrentTimestamp(timestamp);
+  };
 
   if (!isVideoLoaded) {
-    return null
+    return null;
   }
 
   if (isAnalyzing) {
@@ -26,15 +27,17 @@ export function TimestampResults() {
           <p className="ml-3 text-gray-600 dark:text-gray-300">Analyzing video content...</p>
         </div>
       </Card>
-    )
+    );
   }
 
   if (searchResults.length === 0) {
     return (
       <Card className="w-full p-6 bg-white dark:bg-gray-800">
-        <p className="text-center text-gray-500 dark:text-gray-400">Search for content to see timestamps and results</p>
+        <p className="text-center text-gray-500 dark:text-gray-400">
+          Search for content to see timestamps and results.
+        </p>
       </Card>
-    )
+    );
   }
 
   return (
@@ -49,27 +52,32 @@ export function TimestampResults() {
               className="p-3 border rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
               <div className="flex items-start justify-between">
-                <div className="flex items-start gap-3">
-                  <div className="mt-1">
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
                     <Clock className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                    <Badge variant="outline" className="font-mono">
+                      {result.formattedTime}
+                    </Badge>
+                    <Badge
+                      variant="secondary"
+                      className={
+                        result.confidence > 0.9
+                          ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100"
+                          : "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100"
+                      }
+                    >
+                      {Math.round(result.confidence * 100)}% match
+                    </Badge>
                   </div>
                   <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <Badge variant="outline" className="font-mono">
-                        {result.formattedTime}
-                      </Badge>
-                      <Badge
-                        variant="secondary"
-                        className={
-                          result.confidence > 0.9
-                            ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100"
-                            : "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100"
-                        }
-                      >
-                        {Math.round(result.confidence * 100)}% match
-                      </Badge>
-                    </div>
-                    <p className="text-gray-700 dark:text-gray-300">{result.text}</p>
+                    {result.clip_name && (
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {/* <strong>Clip:</strong> {result.clip_name} */}
+                      </p>
+                    )}
+                    {/* <p className="text-gray-700 dark:text-gray-300">
+                      {result.text || result.summary}
+                    </p> */}
                   </div>
                 </div>
                 <Button
@@ -87,6 +95,5 @@ export function TimestampResults() {
         </div>
       </ScrollArea>
     </Card>
-  )
+  );
 }
-

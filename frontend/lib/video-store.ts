@@ -6,7 +6,9 @@ type SearchResult = {
   formattedTime: string
   text: string
   confidence: number
+  clip_name?: string  // add this property as optional
 }
+
 
 type VideoStore = {
   videoUrl: string | null

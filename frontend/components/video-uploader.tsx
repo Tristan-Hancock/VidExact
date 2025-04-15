@@ -10,20 +10,48 @@ export function VideoUploader() {
   const { toast } = useToast();
   const { setVideo, setIsAnalyzing, setIsVideoLoaded } = useVideoStore();
   const [isDragging, setIsDragging] = useState(false);
-
-  // Create a ref for the file input
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Function to programmatically trigger the file input click
+  // Function to programmatically trigger the file input click.
   const handleButtonClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
 
+  // Function to trigger processing pipeline after the video is uploaded.
+  async function triggerProcessing() {
+    console.log("Triggering processing pipeline...");
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/process`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      console.log("Received processing response with status:", response.status);
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || "Processing failed");
+      }
+      const data = await response.json();
+      console.log("Processing pipeline complete:", data.message);
+      return true;
+    } catch (error: any) {
+      console.error("Error during processing pipeline:", error);
+      toast({
+        title: "Processing error",
+        description: error.message,
+        variant: "destructive",
+      });
+      return false;
+    }
+  }
+
+  // Updated file upload handler that calls triggerProcessing() upon success.
   const handleFileUpload = async (file: File) => {
     console.log("Starting file upload process...");
-    // Check if the file is a valid video format.
     if (!file.type.endsWith("mp4") && !file.type.endsWith("webm")) {
       toast({
         title: "Invalid file type",
@@ -34,10 +62,8 @@ export function VideoUploader() {
       return;
     }
 
-    // Log file details for debugging.
     console.log("Uploading file:", file.name, file.type, file.size);
 
-    // Create a FormData object to send the file via POST.
     const formData = new FormData();
     formData.append("file", file);
 
@@ -49,9 +75,8 @@ export function VideoUploader() {
         method: "POST",
         body: formData,
       });
-      
-      console.log("Received response from backend:", response.status);
 
+      console.log("Received response from backend:", response.status);
       if (!response.ok) {
         const errData = await response.json();
         console.error("Upload error response:", errData);
@@ -64,21 +89,21 @@ export function VideoUploader() {
         title: "Video uploaded",
         description: "Video has been successfully uploaded.",
       });
-      // Set the local video URL for preview (if desired).
+
+      // Set the local video URL for preview (if desired)
       setVideo(URL.createObjectURL(file));
       setIsVideoLoaded(true);
 
-      // Simulate further processing.
-      console.log("Starting video analysis simulation...");
+      // Trigger actual processing on the backend.
       setIsAnalyzing(true);
-      setTimeout(() => {
-        setIsAnalyzing(false);
+      const processingSuccess = await triggerProcessing();
+      if (processingSuccess) {
         toast({
           title: "Analysis complete",
           description: "Your video is ready to be searched.",
         });
-        console.log("Video analysis simulation complete.");
-      }, 3000);
+      }
+      setIsAnalyzing(false);
     } catch (error: any) {
       console.error("Error during file upload:", error);
       toast({
@@ -127,12 +152,10 @@ export function VideoUploader() {
           Drag and drop your video file here, or click to browse.
         </p>
 
-        {/* Remove htmlFor and onChange from the label since we handle click via ref */}
         <Button onClick={handleButtonClick} className="flex items-center gap-2">
           <Upload className="h-4 w-4" />
           Select Video
         </Button>
-        {/* Hidden file input */}
         <input
           ref={fileInputRef}
           id="video-upload"

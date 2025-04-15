@@ -1,32 +1,29 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useState } from "react"
-import { Send } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { useVideoStore } from "@/lib/video-store"
-import { useToast } from "@/components/ui/use-toast"
+import React, { useState } from "react";
+import { Send } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { useVideoStore } from "@/lib/video-store";
+import { useToast } from "@/components/ui/use-toast";
 
 export function SearchInterface() {
-  const [query, setQuery] = useState("")
-  const { toast } = useToast()
-  const { isVideoLoaded, isAnalyzing, addSearchResult } = useVideoStore()
+  const [query, setQuery] = useState("");
+  const { toast } = useToast();
+  const { isVideoLoaded, isAnalyzing, addSearchResult } = useVideoStore();
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!query.trim()) return
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!query.trim()) return;
 
     if (!isVideoLoaded) {
       toast({
         title: "No video uploaded",
         description: "Please upload a video first.",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
     if (isAnalyzing) {
@@ -34,51 +31,60 @@ export function SearchInterface() {
         title: "Video is being analyzed",
         description: "Please wait until analysis is complete.",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
-    // Simulate NLP search results
-    const mockResults = generateMockResults(query)
-    mockResults.forEach((result) => addSearchResult(result))
+    try {
+      console.log("Initiating search request with query:", query);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/search`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query, top_k: 5 }),
+      });
 
-    // Clear the input
-    setQuery("")
+      console.log("Received response from backend with status:", response.status);
+      if (!response.ok) {
+        const errData = await response.json();
+        console.error("Search error response:", errData);
+        throw new Error(errData.error || "Search failed");
+      }
 
-    toast({
-      title: "Search complete",
-      description: `Found ${mockResults.length} results for "${query}"`,
-    })
-  }
+      const data = await response.json();
+      console.log("Search result received:", data);
 
-  // Generate mock search results based on the query
-  const generateMockResults = (searchQuery: string) => {
-    const keywords = searchQuery.toLowerCase().split(" ")
-    const results = []
-
-    // Create 1-3 mock results
-    const resultCount = Math.floor(Math.random() * 3) + 1
-
-    for (let i = 0; i < resultCount; i++) {
-      // Generate random timestamp between 0 and 10 minutes
-      const timestamp = Math.floor(Math.random() * 600)
-      const minutes = Math.floor(timestamp / 60)
-      const seconds = timestamp % 60
-
-      // Create a relevant description based on the query
-      const keywordToUse = keywords[Math.floor(Math.random() * keywords.length)]
-
-      results.push({
-        id: `result-${Date.now()}-${i}`,
-        timestamp,
-        formattedTime: `${minutes}:${seconds.toString().padStart(2, "0")}`,
-        text: `Found "${keywordToUse}" at ${minutes}:${seconds.toString().padStart(2, "0")}`,
-        confidence: Math.random() * 0.3 + 0.7, // Random confidence between 70% and 100%
-      })
+      // Assume the response contains an array of search result objects under 'results'
+      if (data.results && Array.isArray(data.results)) {
+        data.results.forEach((result: any) => {
+          addSearchResult(result);
+        });
+      } else if (data.nlp_output) {
+        // Fallback: create a single result object from returned text
+        addSearchResult({
+          id: `search-${Date.now()}`,
+          timestamp: 0,
+          formattedTime: "0:00",
+          text: data.nlp_output,
+          confidence: 1.0,
+        });
+      }
+      
+      toast({
+        title: "Search complete",
+        description: `Found results for "${query}".`,
+      });
+    } catch (error: any) {
+      console.error("Error during search:", error);
+      toast({
+        title: "Search error",
+        description: error.message,
+        variant: "destructive",
+      });
     }
-
-    return results
-  }
+    setQuery("");
+  };
 
   return (
     <Card className="p-4 bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 rounded-lg">
@@ -96,6 +102,5 @@ export function SearchInterface() {
         </Button>
       </form>
     </Card>
-  )
+  );
 }
-
