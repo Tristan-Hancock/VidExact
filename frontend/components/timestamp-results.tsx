@@ -15,9 +15,7 @@ export function TimestampResults() {
     setCurrentTimestamp(timestamp);
   };
 
-  if (!isVideoLoaded) {
-    return null;
-  }
+  if (!isVideoLoaded) return null;
 
   if (isAnalyzing) {
     return (
@@ -34,7 +32,7 @@ export function TimestampResults() {
     return (
       <Card className="w-full p-6 bg-white dark:bg-gray-800">
         <p className="text-center text-gray-500 dark:text-gray-400">
-          Search for content to see timestamps and results.
+          Content is ready to be searched, start typing.
         </p>
       </Card>
     );
@@ -43,7 +41,6 @@ export function TimestampResults() {
   return (
     <Card className="w-full p-4 bg-white dark:bg-gray-800">
       <h3 className="text-lg font-medium mb-4">Search Results</h3>
-
       <ScrollArea className="h-[250px] pr-4">
         <div className="space-y-3">
           {searchResults.map((result) => (
@@ -58,27 +55,9 @@ export function TimestampResults() {
                     <Badge variant="outline" className="font-mono">
                       {result.formattedTime}
                     </Badge>
-                    <Badge
-                      variant="secondary"
-                      className={
-                        result.confidence > 0.9
-                          ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100"
-                          : "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100"
-                      }
-                    >
-                      {Math.round(result.confidence * 100)}% match
-                    </Badge>
+                 
                   </div>
-                  <div>
-                    {result.clip_name && (
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {/* <strong>Clip:</strong> {result.clip_name} */}
-                      </p>
-                    )}
-                    {/* <p className="text-gray-700 dark:text-gray-300">
-                      {result.text || result.summary}
-                    </p> */}
-                  </div>
+             
                 </div>
                 <Button
                   size="sm"

@@ -36,6 +36,7 @@ export function SearchInterface() {
     }
 
     try {
+      
       console.log("Initiating search request with query:", query);
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/search`, {
         method: "POST",
@@ -55,26 +56,27 @@ export function SearchInterface() {
       const data = await response.json();
       console.log("Search result received:", data);
 
-      // Assume the response contains an array of search result objects under 'results'
-      if (data.results && Array.isArray(data.results)) {
-        data.results.forEach((result: any) => {
-          addSearchResult(result);
-        });
-      } else if (data.nlp_output) {
-        // Fallback: create a single result object from returned text
-        addSearchResult({
-          id: `search-${Date.now()}`,
-          timestamp: 0,
-          formattedTime: "0:00",
-          text: data.nlp_output,
-          confidence: 1.0,
-        });
-      }
+      // if (data.results && Array.isArray(data.results)) {
+      //   data.results.forEach((result: any) => {
+      //     addSearchResult(result);
+      //   });
+      // } else if (data.nlp_output) {
+      //   addSearchResult({
+      //     id: `search-${Date.now()}`,
+      //     timestamp: 0,
+      //     formattedTime: "0:00",
+      //     text: data.nlp_output,
+      //     confidence: 1.0,
+      //   });
+      // }
       
       toast({
         title: "Search complete",
         description: `Found results for "${query}".`,
       });
+      console.log("Received response from backend with status:", response.status);
+      console.log("Search result received:", data);
+
     } catch (error: any) {
       console.error("Error during search:", error);
       toast({

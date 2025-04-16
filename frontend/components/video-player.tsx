@@ -33,8 +33,15 @@ export function VideoPlayer() {
   }
 
   return (
+    
     <Card className="w-full overflow-hidden">
-      <video ref={videoRef} src={videoUrl} className="w-full aspect-video" controls onTimeUpdate={handleTimeUpdate} />
+<video
+  ref={videoRef}
+  src={videoUrl ?? undefined}  // Convert null to undefined.
+  className="w-full aspect-video"
+  controls
+  onTimeUpdate={handleTimeUpdate}
+/>
     </Card>
   )
 }
