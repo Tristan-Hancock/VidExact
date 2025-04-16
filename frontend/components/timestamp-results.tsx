@@ -43,9 +43,9 @@ export function TimestampResults() {
       <h3 className="text-lg font-medium mb-4">Search Results</h3>
       <ScrollArea className="h-[250px] pr-4">
         <div className="space-y-3">
-          {searchResults.map((result) => (
+          {searchResults.map((result, index) => (
             <div
-              key={result.id}
+              key={`${result.timestamp}-${index}`}
               className="p-3 border rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
               <div className="flex items-start justify-between">
@@ -55,9 +55,7 @@ export function TimestampResults() {
                     <Badge variant="outline" className="font-mono">
                       {result.formattedTime}
                     </Badge>
-                 
                   </div>
-             
                 </div>
                 <Button
                   size="sm"
