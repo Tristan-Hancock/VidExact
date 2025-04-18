@@ -10,6 +10,7 @@ export function VideoUploader() {
   const { toast } = useToast();
   const { setVideo, setIsAnalyzing, setIsVideoLoaded } = useVideoStore();
   const [isDragging, setIsDragging] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);  // State to minimize uploader
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Function to programmatically trigger the file input click.
@@ -104,6 +105,9 @@ export function VideoUploader() {
         });
       }
       setIsAnalyzing(false);
+
+      // Minimize the uploader after successful upload
+      setIsMinimized(true);
     } catch (error: any) {
       console.error("Error during file upload:", error);
       toast({
@@ -132,44 +136,60 @@ export function VideoUploader() {
     }
   };
 
+  const handleReset = () => {
+    // Reset the state and make the uploader visible again
+    setIsMinimized(false);
+    setIsVideoLoaded(false);
+    setVideo("");
+    setIsAnalyzing(false);
+  };
+
   return (
     <div
       className={`w-full max-w-xl mx-auto border-2 border-dashed rounded-lg p-8 flex flex-col items-center justify-center transition-colors ${
         isDragging
           ? "border-primary bg-primary/5"
           : "border-gray-300 dark:border-gray-700 hover:border-primary/50"
-      }`}
+      } ${isMinimized ? "h-20" : "h-auto"}`} // Minimize height when video is uploaded
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <div className="flex flex-col items-center text-center">
-        <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-          <Video className="h-10 w-10 text-primary" />
-        </div>
-        <h3 className="text-lg font-medium mb-2">Upload your video</h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-          Drag and drop your video file here, or click to browse.
-        </p>
-
-        <Button onClick={handleButtonClick} className="flex items-center gap-2">
-          <Upload className="h-4 w-4" />
-          Select Video
+      {isMinimized ? (
+        <Button onClick={handleReset} className="mt-4">
+          Replay Video
         </Button>
-        <input
-          ref={fileInputRef}
-          id="video-upload"
-          type="file"
-          accept="video/*"
-          className="hidden"
-          onChange={(e) => {
-            if (e.target.files && e.target.files.length > 0) {
-              console.log("Selected file:", e.target.files[0].name);
-              handleFileUpload(e.target.files[0]);
-            }
-          }}
-        />
-      </div>
+      ) : (
+        <>
+          <div className="flex flex-col items-center text-center">
+            <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+              <Video className="h-10 w-10 text-primary" />
+            </div>
+            <h3 className="text-lg font-medium mb-2">Upload your video</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+              Drag and drop your video file here, or click to browse.
+            </p>
+
+            <Button onClick={handleButtonClick} className="flex items-center gap-2">
+              <Upload className="h-4 w-4" />
+              Select Video
+            </Button>
+            <input
+              ref={fileInputRef}
+              id="video-upload"
+              type="file"
+              accept="video/*"
+              className="hidden"
+              onChange={(e) => {
+                if (e.target.files && e.target.files.length > 0) {
+                  console.log("Selected file:", e.target.files[0].name);
+                  handleFileUpload(e.target.files[0]);
+                }
+              }}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }

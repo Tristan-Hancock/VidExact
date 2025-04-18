@@ -5,10 +5,7 @@ import { VideoPlayer } from "@/components/video-player"
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center p-4 md:p-8 bg-gray-50 dark:bg-gray-900 relative">
-      {/* Spinning Gradient Background Circles */}
-      <div className="orange-gradient-1 absolute -right-[150px] top-[370px] -z-[1] h-[500px] w-[500px] animate-spin rounded-[500px]"></div>
-      <div className="orange-gradient-2 absolute right-[57px] top-[620px] -z-[1] h-[450px] w-[450px] animate-spin rounded-[450px]"></div>
+    <main className="flex min-h-screen flex-col items-center p-4 md:p-8 bg-gradient-to-br from-[#F6E1C3] to-[#FF7A00] text-gray-900 dark:bg-gray-900">
 
       <div className="w-full max-w-5xl flex flex-col items-center gap-8">
         {/* Logo Image */}

@@ -90,16 +90,20 @@ export function SearchInterface() {
   };
 
   return (
-    <Card className="p-4 bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 rounded-lg">
+    <Card className="p-4 bg-[#F6E1C3] dark:bg-[#222222] shadow-lg border border-[#FF7A00] dark:border-[#FF7A00] rounded-lg">
       <form onSubmit={handleSearch} className="flex gap-2">
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search for content in the video..."
-          className="flex-1"
+          className="flex-1 border-[#FF7A00] focus:border-[#FF7A00] focus:ring-2 focus:ring-[#FF7A00]"
           disabled={!isVideoLoaded || isAnalyzing}
         />
-        <Button type="submit" disabled={!isVideoLoaded || isAnalyzing || !query.trim()}>
+        <Button
+          type="submit"
+          disabled={!isVideoLoaded || isAnalyzing || !query.trim()}
+          className="bg-[#FF7A00] hover:bg-[#FFB72B] text-white border-[#FF7A00] hover:border-[#FFB72B] transition-all duration-300"
+        >
           <Send className="h-4 w-4" />
           <span className="sr-only">Search</span>
         </Button>
