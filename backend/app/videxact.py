@@ -16,7 +16,7 @@ import json
 import torch.nn as nn
 from PIL import Image
 import pytesseract
-
+import json
 # Define a custom InputLayer to address the 'batch_shape' issue during model loading
 class CustomInputLayer(KerasInputLayer):
     def _init_(self, **kwargs):
@@ -29,6 +29,7 @@ from scenedetect import open_video, SceneManager
 from scenedetect.detectors import ContentDetector, ThresholdDetector
 
 import vosk
+
 
 # Global: Load face recognition models (loaded once for efficiency)
 vgg_face_descriptor = load_model('../models/vgg_face_descriptor.h5', custom_objects={'InputLayer': CustomInputLayer})
@@ -103,67 +104,6 @@ action_model.eval()
 with open('../models/class_to_idx.json','r') as f:
     class_to_idx = json.load(f)
 idx_to_class = {v:k for k,v in class_to_idx.items()}
-
-# Function 1: Detect Scenes using scenedetect
-def detect_scenes(video_path, content_threshold=50.0, threshold_val=20, min_scene_len=15):
-    video = open_video(video_path)
-    scene_manager = SceneManager()
-    scene_manager.add_detector(ContentDetector(threshold=content_threshold))
-    scene_manager.add_detector(ThresholdDetector(threshold=threshold_val, min_scene_len=min_scene_len))
-    scene_manager.detect_scenes(video=video)
-    scene_list = scene_manager.get_scene_list()
-    print(f"[LOG] detect_scenes: Detected {len(scene_list)} scene(s) in '{video_path}'.")
-    return scene_list
-
-
-# Function 2: Trim Video Clip using ffmpeg-python
-def trim_clip(input_video, start_time, end_time, clip_index, max_duration=4.0, output_dir='clips'):
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-    duration = end_time - start_time
-    if duration > max_duration:
-        end_time = start_time + max_duration  # Truncate to max_duration
-    clip_name = f"Scene_{clip_index:03d}.mp4"
-    output_path = os.path.join(output_dir, clip_name)
-    
-    try:
-        ffmpeg.input(input_video, ss=start_time, t=(end_time - start_time)) \
-              .output(output_path, vcodec='libx264', acodec='aac') \
-              .run(overwrite_output=True)
-    except ffmpeg.Error as e:
-        print("Error trimming clip:", e)
-    
-    print(f"[LOG] trim_clip: Trimmed clip {clip_name} from {start_time}s to {end_time}s (max {max_duration}s).")
-    return output_path
-
-
-# Function 3: Extract Key Frame using OpenCV
-def extract_key_frame(clip_path, frame_index='middle', output_dir='frames'):
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-    
-    cap = cv2.VideoCapture(clip_path)
-    fps = cap.get(cv2.CAP_PROP_FPS)
-    frame_count = cap.get(cv2.CAP_PROP_FRAME_COUNT)
-    duration = frame_count / fps if fps > 0 else 0
-    
-    # Determine target time: use the middle of the clip by default
-    target_time = duration / 2 if frame_index == 'middle' else 0
-    target_frame = int(target_time * fps)
-    
-    cap.set(cv2.CAP_PROP_POS_FRAMES, target_frame)
-    ret, frame = cap.read()
-    if ret:
-        frame_file_name = os.path.basename(clip_path).split('.')[0] + "_keyframe.jpg"
-        frame_path = os.path.join(output_dir, frame_file_name)
-        cv2.imwrite(frame_path, frame)
-        print(f"[LOG] extract_key_frame: Extracted key frame at {target_time:.2f}s -> {frame_path}")
-        cap.release()
-        return frame_path
-    else:
-        cap.release()
-        print("[LOG] extract_key_frame: Failed to extract frame.")
-        return None
 
 
 # Function 4: Speech-to-Text using Vosk (with ffmpeg for audio extraction)
@@ -334,100 +274,164 @@ def recognize_text(image_path):
     
 
 
+import os
+import json
+import cv2
+
+import os
+import json
+import csv
+import cv2
+
 def process_video(video_path):
-    print(f"[LOG] process_video: Starting processing for '{video_path}'...")
-    
-    # 1) Scene Detection
-    scenes = detect_scenes(video_path, content_threshold=10.0, threshold_val=20, min_scene_len=15)
-    print(f"[DEBUG] process_video: Scenes -> {scenes}")
-    if not scenes:
-        print("[DEBUG] process_video: No scenes detected! The CSV will likely be empty.")
-    
+    # ———————————————————————————————————————————————————————
+    # 1) Resolve directories
+    # ———————————————————————————————————————————————————————
+    script_dir  = os.path.dirname(os.path.abspath(__file__))  # .../backend/app
+    project_root= os.path.dirname(script_dir)                 # .../backend
+    output_dir  = os.path.join(project_root, "output")
+    frames_dir  = os.path.join(output_dir, "frames")
+    csv_dir     = os.path.join(output_dir, "csv")
+    json_dir    = os.path.join(output_dir, "json")
+    os.makedirs(frames_dir, exist_ok=True)
+    os.makedirs(csv_dir, exist_ok=True)
+    os.makedirs(json_dir, exist_ok=True)
+
+    csv_path  = os.path.join(csv_dir,  "final_results.csv")
+    json_path = os.path.join(json_dir, "final_results.json")
+
+    print(f"[LOG] process_video: Opening '{video_path}'")
+    cap = cv2.VideoCapture(video_path)
+    if not cap.isOpened():
+        raise RuntimeError(f"Cannot open video: {video_path}")
+
+    fps          = cap.get(cv2.CAP_PROP_FPS)
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    duration_s   = int(total_frames / fps)
+
+    # ———————————————————————————————————————————————————————
+    # 2) Speech-to-text for entire video
+    # ———————————————————————————————————————————————————————
+    caption = speech_to_text(video_path)
+
     results = []
-    
-    for idx, scene in enumerate(scenes, start=1):
-        start_sec = scene[0].get_seconds()
-        end_sec = scene[1].get_seconds()
-        print(f"[LOG] process_video: Processing scene #{idx} | Start: {start_sec:.2f}s, End: {end_sec:.2f}s.")
-        
-        # 2) Trim the scene using ffmpeg
-        clip_output_dir = os.path.join("..", "output", "clips")
-        clip_path = trim_clip(video_path, start_sec, end_sec, idx, max_duration=4.0, output_dir=clip_output_dir)
+    # ———————————————————————————————————————————————————————
+    # 3) Sample one frame per second
+    # ———————————————————————————————————————————————————————
+    for sec in range(duration_s):
+        cap.set(cv2.CAP_PROP_POS_MSEC, sec * 1000)
+        ret, frame = cap.read()
+        if not ret:
+            print(f"[WARN] could not read frame at {sec}s")
+            continue
 
+        frame_name     = f"Frame{sec+1}"
+        frame_file     = frame_name + ".jpg"
+        frame_path     = os.path.join(frames_dir, frame_file)
+        cv2.imwrite(frame_path, frame)
 
-        
-        # 3) Extract a key frame from the trimmed clip using OpenCV
-        frame_output_dir = os.path.join("..", "output", "frames")
-        frame_path = extract_key_frame(clip_path, frame_index='middle', output_dir=frame_output_dir)
-        ocr_text = recognize_text(frame_path) if frame_path else ""
-        
-        # 4) Speech-to-Text from the trimmed clip
-        recognized_speech = speech_to_text(clip_path)
-        
-        # 5) Face detection & recognition on the key frame using MediaPipe logic
-        face_identity = recognize_face_mediapipe(frame_path)
-        
-        # 6) Object detection on the key frame using YOLOv5
-        object_detections = detect_objects_yolo(frame_path)
-      
+        # ———————————————————————————————————————————————————————
+        # 4) Run analyses
+        # ———————————————————————————————————————————————————————
+        try:
+            face_id = recognize_face_mediapipe(frame_path)
+        except Exception as e:
+            print(f"[ERROR] Face detection failed at {frame_name}: {e}")
+            face_id = "Error"
 
-        # 7) Collect and store the results (object detections stored as a JSON string)
-        record = {
-            "clip_name": os.path.basename(clip_path),
-            "frame_name": os.path.basename(frame_path) if frame_path else "None",
-            "face_detected": face_identity,
-            "caption": recognized_speech,
-            "object_detection": json.dumps(object_detections),
-            "ocr_text": ocr_text,
-            "timestamp_start": start_sec,
-            "timestamp_end": end_sec
-        }
-        # Add action prediction after record exists
-        action_label, action_conf = recognize_action(clip_path, action_model, idx_to_class, device, object_detections)
-        record["action"] = action_label
-        record["action_confidence"] = action_conf
-        results.append(record)
-        print(f"[LOG] process_video: Scene #{idx} processing complete.\n")
-    
-    print(f"[DEBUG] process_video: Final results -> {results}")
-    
-    # Write results to CSV
-    csv_dir= os.path.join("..","output","csv")
-    if not os.path.exists(csv_dir):
-        os.makedirs(csv_dir)
-    csv_filename = os.path.join(csv_dir, "final_results.csv")
-    fieldnames = ["clip_name","frame_name","face_detected","caption","object_detection","action","action_confidence","ocr_text","timestamp_start","timestamp_end"]
-    with open(csv_filename, mode="w", newline="", encoding="utf-8") as f:
+        try:
+            objects = detect_objects_yolo(frame_path)
+        except Exception as e:
+            print(f"[ERROR] Object detection failed at {frame_name}: {e}")
+            objects = []
+
+        try:
+            ocr_txt = recognize_text(frame_path)
+        except Exception as e:
+            print(f"[ERROR] OCR failed at {frame_name}: {e}")
+            ocr_txt = ""
+
+        try:
+            action_lbl, action_conf = recognize_action(
+                video_path, action_model, idx_to_class, device, objects
+            )
+        except Exception as e:
+            print(f"[ERROR] Action recognition failed at {frame_name}: {e}")
+            action_lbl, action_conf = "Error", 0.0
+
+        timestamp = sec
+        print(f"[LOG] {frame_name} @ {timestamp}s | face={face_id} "
+              f"| objs={len(objects)} | words={len(ocr_txt.split())}")
+
+        results.append({
+            "frame_name":        frame_name,
+            "face_detected":     face_id,
+            "caption":           caption,
+            "object_detection":  objects,
+            "action":            action_lbl,
+            "action_confidence": action_conf,
+            "ocr_text":          ocr_txt,
+            "timestamp_start":   timestamp,
+            "timestamp_end":     timestamp
+        })
+
+    cap.release()
+
+    # ———————————————————————————————————————————————————————
+    # 5) Write CSV
+    # ———————————————————————————————————————————————————————
+    fieldnames = [
+        "frame_name","face_detected","caption",
+        "object_detection","action","action_confidence",
+        "ocr_text","timestamp_start","timestamp_end"
+    ]
+    with open(csv_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(results)
-    
-    print(f"[LOG] process_video: All scenes processed. Results saved to '{csv_filename}'.")
+    print(f"[LOG] process_video: Saved CSV to '{csv_path}'")
+
+    # ———————————————————————————————————————————————————————
+    # 6) Write JSON
+    # ———————————————————————————————————————————————————————
+    os.makedirs(json_dir, exist_ok=True)
+    with open(json_path, "w", encoding="utf-8") as jf:
+        json.dump({"results": results}, jf, indent=2)
+    print(f"[LOG] process_video: Also saved JSON to '{json_path}'")
+
+
+
+
 
 
 # if __name__ == "__main__":
 #     print("[DEBUG] Starting main pipeline process...")
 #     input_video = "../input/Video4.mp4"
 #     process_video(input_video)
+from pathlib import Path
+
 if __name__ == "__main__":
-    print("[DEBUG] Starting main pipeline process in videxact.py...")
+    # 1) Locate this script
+    script_path = Path(__file__).resolve()
+    print(f"[DEBUG] Script path: {script_path}")
 
-    # Compute the absolute path to the directory containing this script.
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    print(f"[DEBUG] videxact.py is located in: {script_dir}")
+    # 2) Build the input-video path
+    project_root = script_path.parent.parent  # .../backend
+    input_dir    = project_root / "input"
+    input_video  = (input_dir / "Video4.mp4").resolve()
 
-    # Construct the absolute path to the input video.
-    input_video = os.path.join(script_dir, "..", "input", "Video4.mp4")
-    print(f"[DEBUG] Computed input video path: {input_video}")
+    print(f"[DEBUG] Looking for video at: {input_video}")
+    print(f"[DEBUG] Input folder contents: {[p.name for p in input_dir.iterdir()]}")
 
-    # Check if the file exists.
-    if not os.path.exists(input_video):
-        print(f"[ERROR] Input video not found at: {input_video}")
-    else:
-        print(f"[DEBUG] Input video found. Proceeding with processing.")
+    # 3) Check & fail fast
+    if not input_video.is_file():
+        raise FileNotFoundError(
+            f"[ERROR] No 'Video4.mp4' in {input_dir}\n"
+            f"Directory contains: {[p.name for p in input_dir.iterdir()]}"
+        )
 
-    # Call the processing function (make sure process_video() is defined properly).
-    process_video(input_video)
-
-    print("[DEBUG] Finished processing video in videxact.py.")
+    # 4) All good—run
+    print("[DEBUG] Video found, starting pipeline…")
+    process_video(str(input_video))
+    print("[DEBUG] Done.")
 

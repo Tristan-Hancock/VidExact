@@ -1,0 +1,324 @@
+{
+  "results": [
+    {
+      "frame_name": "Frame1",
+      "face_detected": "NoFaceDetected",
+      "caption": "oh my god oh go wow",
+      "object_detection": [
+        {
+          "class": "laptop",
+          "confidence": 0.9201896786689758,
+          "prominence": 0.4608978045558807
+        },
+        {
+          "class": "person",
+          "confidence": 0.5384858846664429,
+          "prominence": 0.08658544510552019
+        }
+      ],
+      "action": "Archery",
+      "action_confidence": 0.6625517010688782,
+      "ocr_text": "",
+      "timestamp_start": 0,
+      "timestamp_end": 0
+    },
+    {
+      "frame_name": "Frame2",
+      "face_detected": "NoFaceDetected",
+      "caption": "oh my god oh go wow",
+      "object_detection": [
+        {
+          "class": "bottle",
+          "confidence": 0.9139246344566345,
+          "prominence": 0.06430668123874865
+        },
+        {
+          "class": "laptop",
+          "confidence": 0.9134474992752075,
+          "prominence": 0.45605873084787163
+        },
+        {
+          "class": "person",
+          "confidence": 0.7092527151107788,
+          "prominence": 0.07996603164719393
+        }
+      ],
+      "action": "Archery",
+      "action_confidence": 0.6625517010688782,
+      "ocr_text": "",
+      "timestamp_start": 1,
+      "timestamp_end": 1
+    },
+    {
+      "frame_name": "Frame3",
+      "face_detected": "pins_Lili Reinhart",
+      "caption": "oh my god oh go wow",
+      "object_detection": [
+        {
+          "class": "bottle",
+          "confidence": 0.9175142645835876,
+          "prominence": 0.06264418276461786
+        },
+        {
+          "class": "laptop",
+          "confidence": 0.8685497641563416,
+          "prominence": 0.4376882004991704
+        }
+      ],
+      "action": "Archery",
+      "action_confidence": 0.6625517010688782,
+      "ocr_text": "",
+      "timestamp_start": 2,
+      "timestamp_end": 2
+    },
+    {
+      "frame_name": "Frame4",
+      "face_detected": "NoFaceDetected",
+      "caption": "oh my god oh go wow",
+      "object_detection": [
+        {
+          "class": "laptop",
+          "confidence": 0.8924835324287415,
+          "prominence": 0.4337197159592324
+        },
+        {
+          "class": "bottle",
+          "confidence": 0.888312816619873,
+          "prominence": 0.06040299818519189
+        },
+        {
+          "class": "person",
+          "confidence": 0.7504404187202454,
+          "prominence": 0.07114602658972015
+        }
+      ],
+      "action": "Archery",
+      "action_confidence": 0.6625517010688782,
+      "ocr_text": "",
+      "timestamp_start": 3,
+      "timestamp_end": 3
+    },
+    {
+      "frame_name": "Frame5",
+      "face_detected": "NoFaceDetected",
+      "caption": "oh my god oh go wow",
+      "object_detection": [
+        {
+          "class": "bottle",
+          "confidence": 0.917918860912323,
+          "prominence": 0.07742508287578756
+        },
+        {
+          "class": "bottle",
+          "confidence": 0.7781367897987366,
+          "prominence": 0.06387206729656707
+        },
+        {
+          "class": "person",
+          "confidence": 0.6687115430831909,
+          "prominence": 0.1130243901181772
+        }
+      ],
+      "action": "Archery",
+      "action_confidence": 0.6625517010688782,
+      "ocr_text": "",
+      "timestamp_start": 4,
+      "timestamp_end": 4
+    },
+    {
+      "frame_name": "Frame6",
+      "face_detected": "NoFaceDetected",
+      "caption": "oh my god oh go wow",
+      "object_detection": [
+        {
+          "class": "bottle",
+          "confidence": 0.8686965107917786,
+          "prominence": 0.07263025890314237
+        },
+        {
+          "class": "bottle",
+          "confidence": 0.8596262335777283,
+          "prominence": 0.06253211988839515
+        },
+        {
+          "class": "person",
+          "confidence": 0.7625598907470703,
+          "prominence": 0.06774817654326196
+        },
+        {
+          "class": "laptop",
+          "confidence": 0.7615725994110107,
+          "prominence": 0.41516740259266954
+        }
+      ],
+      "action": "Archery",
+      "action_confidence": 0.6625517010688782,
+      "ocr_text": "",
+      "timestamp_start": 5,
+      "timestamp_end": 5
+    },
+    {
+      "frame_name": "Frame7",
+      "face_detected": "NoFaceDetected",
+      "caption": "oh my god oh go wow",
+      "object_detection": [
+        {
+          "class": "bottle",
+          "confidence": 0.8490529656410217,
+          "prominence": 0.07303660678650582
+        },
+        {
+          "class": "bottle",
+          "confidence": 0.8467594385147095,
+          "prominence": 0.06675531842280179
+        },
+        {
+          "class": "person",
+          "confidence": 0.710517168045044,
+          "prominence": 0.06695889767867307
+        }
+      ],
+      "action": "Archery",
+      "action_confidence": 0.6625517010688782,
+      "ocr_text": "",
+      "timestamp_start": 6,
+      "timestamp_end": 6
+    },
+    {
+      "frame_name": "Frame8",
+      "face_detected": "NoFaceDetected",
+      "caption": "oh my god oh go wow",
+      "object_detection": [
+        {
+          "class": "bottle",
+          "confidence": 0.8631132245063782,
+          "prominence": 0.06553774932783402
+        },
+        {
+          "class": "bottle",
+          "confidence": 0.8449127078056335,
+          "prominence": 0.07224912453561552
+        },
+        {
+          "class": "person",
+          "confidence": 0.6114169359207153,
+          "prominence": 0.06707101612647724
+        }
+      ],
+      "action": "Archery",
+      "action_confidence": 0.6625517010688782,
+      "ocr_text": "",
+      "timestamp_start": 7,
+      "timestamp_end": 7
+    },
+    {
+      "frame_name": "Frame9",
+      "face_detected": "NoFaceDetected",
+      "caption": "oh my god oh go wow",
+      "object_detection": [
+        {
+          "class": "bottle",
+          "confidence": 0.8513426184654236,
+          "prominence": 0.07248235081195971
+        },
+        {
+          "class": "bottle",
+          "confidence": 0.8474693894386292,
+          "prominence": 0.06420926283390145
+        },
+        {
+          "class": "person",
+          "confidence": 0.6293532848358154,
+          "prominence": 0.06662426156907006
+        }
+      ],
+      "action": "Archery",
+      "action_confidence": 0.6625517010688782,
+      "ocr_text": "",
+      "timestamp_start": 8,
+      "timestamp_end": 8
+    },
+    {
+      "frame_name": "Frame10",
+      "face_detected": "NoFaceDetected",
+      "caption": "oh my god oh go wow",
+      "object_detection": [
+        {
+          "class": "bottle",
+          "confidence": 0.84297114610672,
+          "prominence": 0.06724124535602945
+        },
+        {
+          "class": "bottle",
+          "confidence": 0.8325361013412476,
+          "prominence": 0.07181300563207414
+        },
+        {
+          "class": "person",
+          "confidence": 0.6854652166366577,
+          "prominence": 0.06564075978123583
+        }
+      ],
+      "action": "Archery",
+      "action_confidence": 0.6625517010688782,
+      "ocr_text": "",
+      "timestamp_start": 9,
+      "timestamp_end": 9
+    },
+    {
+      "frame_name": "Frame11",
+      "face_detected": "NoFaceDetected",
+      "caption": "oh my god oh go wow",
+      "object_detection": [
+        {
+          "class": "bottle",
+          "confidence": 0.8754334449768066,
+          "prominence": 0.06354760608276895
+        },
+        {
+          "class": "bottle",
+          "confidence": 0.8725336790084839,
+          "prominence": 0.07013774277114862
+        },
+        {
+          "class": "person",
+          "confidence": 0.6517075896263123,
+          "prominence": 0.0640990250786126
+        }
+      ],
+      "action": "Archery",
+      "action_confidence": 0.6625517010688782,
+      "ocr_text": "",
+      "timestamp_start": 10,
+      "timestamp_end": 10
+    },
+    {
+      "frame_name": "Frame12",
+      "face_detected": "NoFaceDetected",
+      "caption": "oh my god oh go wow",
+      "object_detection": [],
+      "action": "Archery",
+      "action_confidence": 0.6625517010688782,
+      "ocr_text": "",
+      "timestamp_start": 11,
+      "timestamp_end": 11
+    },
+    {
+      "frame_name": "Frame13",
+      "face_detected": "NoFaceDetected",
+      "caption": "oh my god oh go wow",
+      "object_detection": [
+        {
+          "class": "bottle",
+          "confidence": 0.7228391766548157,
+          "prominence": 0.1537621032710255
+        }
+      ],
+      "action": "Archery",
+      "action_confidence": 0.6625517010688782,
+      "ocr_text": "",
+      "timestamp_start": 12,
+      "timestamp_end": 12
+    }
+  ]
+}

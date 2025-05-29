@@ -1,8 +1,8 @@
 #backend
 .env
-datasets/*
-model_training/*
+backend/datasets/UCF-101/*
 backend/input/*
+backend/datasets/
 !backend/input/.gitkeep
 output/*
 models/*
@@ -26,7 +26,7 @@ backend/output/frames/*
 !backend/output/frames/.gitkeep
 backend/venv
 backend/server/yolov5x.pt
-
+datasets/*
 
 # Frontend directories and files to ignore
 frontend/node_modules/
