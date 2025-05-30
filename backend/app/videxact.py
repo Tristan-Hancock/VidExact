@@ -17,6 +17,10 @@ import torch.nn as nn
 from PIL import Image
 import pytesseract
 import json
+import easyocr
+
+OCR_READER = easyocr.Reader(["en"], gpu=torch.cuda.is_available())
+
 # Define a custom InputLayer to address the 'batch_shape' issue during model loading
 class CustomInputLayer(KerasInputLayer):
     def _init_(self, **kwargs):
@@ -261,16 +265,53 @@ def recognize_action(clip_path, model, idx_to_class, device, object_detections, 
     return label, float(top_conf)
 
 #Function 8 - Character Recognition
-def recognize_text(image_path):
+import cv2
+import numpy as np
+from PIL import Image
+
+def recognize_text(frame_path):
+    """
+    Preprocess the frame (resize, grayscale, threshold) then run EasyOCR.
+    Returns the concatenated text.
+    """
     try:
-        # Open the image using PIL and run pytesseract OCR
-        img = Image.open(image_path)
-        text = pytesseract.image_to_string(img)
-        print(f"[LOG] recognize_text: OCR found {len(text.split())} words.")
-        return text.strip()
+        # 1) Load & upscale
+        img = cv2.imread(frame_path)
+        if img is None:
+            print(f"[LOG] recognize_text: Could not read {frame_path}")
+            return ""
+        h, w = img.shape[:2]
+        # double size to help OCR
+        img = cv2.resize(img, (w*2, h*2), interpolation=cv2.INTER_CUBIC)
+
+        # 2) Grayscale + Otsu threshold
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        _, thresh = cv2.threshold(
+            gray, 0, 255,
+            cv2.THRESH_BINARY | cv2.THRESH_OTSU
+        )
+
+        # 3) (Optional) Morphological closing to fill gaps
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
+        clean = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel, iterations=1)
+
+        # 4) Run EasyOCR on the array directly (no disk I/O)
+        results = OCR_READER.readtext(clean)
+
+        # 5) Extract text from each (bbox, text, conf) tuple
+        texts = [res[1] for res in results]
+        full_text = " ".join(texts).strip()
+
+        print(f"[LOG] recognize_text (EasyOCR): Detected {len(texts)} segments: \"{full_text}\"")
+        return full_text
+
     except Exception as e:
-        print("[LOG] recognize_text: Error processing OCR:", e)
+        print(f"[ERROR] recognize_text: EasyOCR failed on {frame_path}: {e}")
         return ""
+
+
+
+
     
 
 
